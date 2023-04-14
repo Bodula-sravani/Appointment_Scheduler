@@ -211,17 +211,51 @@ namespace Appointment_Scheduler.Controllers
 				return View();
 			}
 		}
-		// GET: UserController/Details/5
-		public ActionResult Details(int id)
+
+		public Appointment GetAppointment(int id)
 		{
-			return View();
+			Console.WriteLine("entered get an appointmenst method");
+			Appointment appointment = new Appointment();
+			try
+			{
+				connection.Open();
+				SqlCommand command = new SqlCommand("GetAppointment", connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@id", id);
+				SqlDataReader reader = command.ExecuteReader();
+				Console.WriteLine("reader excecuted");
+				while (reader.Read())
+				{
+					appointment.Id = (int)reader["Id"];
+					appointment.Title = (string)reader["title"];
+					appointment.Description = (string)reader["description"];
+					appointment.Date = (DateTime)reader["Date_of_appointment"];
+					appointment.StartTime = (TimeSpan)reader["startTime"];
+					appointment.EndTime = (TimeSpan)reader["EndTime"];
+					appointment.userId = (string)reader["userId"];
+				}
+				reader.Close();
+				connection.Close();
+
+			}
+			catch (SqlException ex)
+			{
+				Console.WriteLine("error: " + ex.Message);
+			}
+			return appointment;
+
+		}
+		// GET: UserController/Details/5
+		public ActionResult Details(int Id)
+		{
+			return View(GetAppointment(Id));
 		}
 		// GET: UserController/Edit/5
-		public ActionResult Edit(int id)
+		public ActionResult Edit(int Id)
 		{
 			Console.WriteLine("Entered edit method");
-			Console.WriteLine("id of app in edit method :" + id);
-			return View();
+			Console.WriteLine("id of app in edit method :" + Id);
+			return View(GetAppointment(Id));
 		}
 
 		// POST: UserController/Edit/5
