@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using NuGet.Protocol.Plugins;
+using System.Data;
 
 namespace Appointment_Scheduler.Controllers
 {
@@ -95,6 +96,7 @@ namespace Appointment_Scheduler.Controllers
 					user.phoneNumber = (string)reader["userPhonenumber"];
 					user.userId = (string)reader["userId"];
 					user.Email = (string)reader["userEmail"];	
+					user.Name = (string)reader["userName"];
                 }
                 reader.Close();
                 connection.Close();
@@ -106,28 +108,56 @@ namespace Appointment_Scheduler.Controllers
             }
             return user;
         }
-		public ActionResult userPage(string userId)
+		public ActionResult userPage(Users user)
 		{
+            Console.WriteLine("user id in user page method: " + user.userId);
+            Users currentUser = getUser(user.userId);
 			
-			Users user = getUser(userId);
-			ViewData["name"] = user.Name;
-            Console.WriteLine("user Name: " + user.Name);
-            return View(user);
+			//ViewData["name"] = user1.Name;
+            Console.WriteLine("user Name: " + currentUser.Name);
+            return View(currentUser);
 		}
 
-		public ActionResult Create(int id)
+		public ActionResult Create(Users user)
 		{
+			Console.WriteLine("in create method id: " + user.userId);
 			return View();
 		}
 
-		// POST: UserController/Edit/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Create(int id, IFormCollection collection)
+		public void insertAppointment(Appointment a)
 		{
 			try
 			{
-				return RedirectToAction(nameof(Index));
+				connection.Open();
+				SqlCommand command = new SqlCommand("addAppointment", connection);
+				command.CommandType = CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@date", a.Date);
+                command.Parameters.AddWithValue("@start", a.StartTime);
+                command.Parameters.AddWithValue("@end", a.EndTime);
+                command.Parameters.AddWithValue("@user", a.userId);
+                command.Parameters.AddWithValue("@title", a.Title);
+                command.Parameters.AddWithValue("@des", a.Description);
+
+				command.ExecuteNonQuery();
+				connection.Close();
+
+            }
+			catch(SqlException ex) 
+			{
+				Console.WriteLine("error: " + ex.Message);
+			}
+		}
+		// POST: UserController/Edit/5
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Create(Users user,Appointment a)
+		{
+
+			try
+			{
+                insertAppointment(a);
+				Console.WriteLine("using user obj in create post method: user id: " + user.userId);
+				return RedirectToAction("userPage", "User",user);
 			}
 			catch
 			{

@@ -1,18 +1,96 @@
-﻿@model IEnumerable<Appointment_Scheduler.Models.Users>
+﻿@model Appointment_Scheduler.Models.Users
 
 @{
     ViewData["Title"] = "UserPage";
+    
 }
 
-<h1>welcome</h1>
 
-<p>
-    <a asp-action="Create">Create New appointment</a>
-</p>
 
-<p>
+<div class="text-center">
+	<h1 class="display-4">Welcome @Model.Name</h1>
+</div>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+			background-color: #f1f1f1;
+			font-family: Arial, sans-serif;
+			font-size: 16px;
+		}
+
+		form {
+			margin: auto;
+			padding: 20px;
+			background-color: #fff;
+			box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.3);
+			width: 400px;
+			text-align: center;
+			border-radius: 10px;
+		}
+
+		input[type=text], input[type=password] {
+			padding: 10px;
+			margin: 10px 0;
+			display: block;
+			width: 100%;
+			border-radius: 5px;
+			border: none;
+			border: 1px solid #ccc;
+		}
+
+		input[type=submit] {
+			background-color: #4CAF50;
+			color: white;
+			border-radius: 5px;
+			padding: 10px 20px;
+			border: none;
+			cursor: pointer;
+		}
+
+			input[type=submit]:hover {
+				background-color: #45a049;
+			}
+
+		a {
+			color: blue;
+			text-decoration: none;
+			margin-top: 10px;
+			display: inline-block;
+		}
+
+		h2 {
+			margin-top: 0;
+		}
+	</style>
+</head>
+<body>
+	<form action="Create">
+		<input name="userId" value="@Model.userId" hidden/>
+		@*<input name="Name" value="@Model.Name" hidden />
+		<input name="phoneNumber" value="@Model.phoneNumber" hidden/>*@
+		<input type="submit" value="Add an Appointment" class="btn btn-primary btn-sm">
+	</form>
+</body>
+</html>
+
+@*<div>
+    <h1>Welcome @Model.Name</h1>
+</div>
+
+
+@*<form action="Create?userId=@Model.userId">
+    @*<input type="hidden" name="userId" value="@Model.userId" />*@
+   @* <input type="submit" value="Create appointment" class="btn btn-primary btn-sm">*@
+    @*<a asp-action="Create">create appointments</a>*@
+@*</form>*@
+
+
+@*<p>
     <a asp-action="view">view your appointments</a>
-</p>
+</p>*@
 
 
 
