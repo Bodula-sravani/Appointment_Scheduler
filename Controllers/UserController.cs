@@ -24,11 +24,7 @@ namespace Appointment_Scheduler.Controllers
 			return View();
 		}
 
-		// GET: UserController/Details/5
-		public ActionResult Details(int id)
-		{
-			return View();
-		}
+		
 
 		// GET: UserController/Create
 		public ActionResult Register()
@@ -108,19 +104,20 @@ namespace Appointment_Scheduler.Controllers
             }
             return user;
         }
-		public ActionResult userPage(Users user)
+		public ActionResult userPage(string userId)
 		{
-            Console.WriteLine("user id in user page method: " + user.userId);
-            Users currentUser = getUser(user.userId);
+            Console.WriteLine("user id in user page method: " + userId);
+            Users currentUser = getUser(userId);
 			
 			//ViewData["name"] = user1.Name;
             Console.WriteLine("user Name: " + currentUser.Name);
             return View(currentUser);
 		}
 
-		public ActionResult Create(Users user)
+		public ActionResult Create(string userId)
 		{
-			Console.WriteLine("in create method id: " + user.userId);
+			Console.WriteLine("in create method id: " + userId);
+			ViewBag.userId = userId;
 			return View();
 		}
 
@@ -164,11 +161,66 @@ namespace Appointment_Scheduler.Controllers
 				return View();
 			}
 		}
+		public List<Appointment> GetAppointments(string userid)
+		{
+			Console.WriteLine("entered get appointmensts method");
+			List<Appointment> appointmentsList = new List<Appointment>();
+			try
+			{
+				connection.Open();
+				SqlCommand command = new SqlCommand("GetAppointments", connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@userid", userid);
+				SqlDataReader reader = command.ExecuteReader();
+				Console.WriteLine("reader excecuted");
+				while (reader.Read())
+				{
+					Appointment a = new Appointment();
 
+					a.Id = (int)reader["Id"];
+					a.Title = (string)reader["title"];
+					a.Description = (string)reader["description"];
+					a.Date = (DateTime)reader["Date_of_appointment"];
+					a.StartTime = (TimeSpan)reader["startTime"];
+					a.EndTime = (TimeSpan)reader["EndTime"];
+					a.userId = (string)reader["userId"];
 
+					appointmentsList.Add(a);
+
+				}
+				reader.Close();
+				connection.Close();
+
+			}
+			catch (SqlException ex)
+			{
+				Console.WriteLine("error: " + ex.Message);
+			}
+			return appointmentsList;
+		}
+		public ActionResult List(Users user)
+		{
+			try
+			{
+				Console.WriteLine("in list method userid" + user.userId);
+				return View(GetAppointments(user.userId));
+			}
+			catch(Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+				return View();
+			}
+		}
+		// GET: UserController/Details/5
+		public ActionResult Details(int id)
+		{
+			return View();
+		}
 		// GET: UserController/Edit/5
 		public ActionResult Edit(int id)
 		{
+			Console.WriteLine("Entered edit method");
+			Console.WriteLine("id of app in edit method :" + id);
 			return View();
 		}
 

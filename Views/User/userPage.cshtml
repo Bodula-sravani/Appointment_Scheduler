@@ -67,12 +67,22 @@
 	</style>
 </head>
 <body>
+	<div>
 	<form action="Create">
 		<input name="userId" value="@Model.userId" hidden/>
 		@*<input name="Name" value="@Model.Name" hidden />
 		<input name="phoneNumber" value="@Model.phoneNumber" hidden/>*@
 		<input type="submit" value="Add an Appointment" class="btn btn-primary btn-sm">
 	</form>
+	</div>
+	<div>
+	<form action="List">
+		<input name="userId" value="@Model.userId" hidden />
+		@*<input name="Name" value="@Model.Name" hidden />
+		<input name="phoneNumber" value="@Model.phoneNumber" hidden/>*@
+		<input type="submit" value="View your Appointments" class="btn btn-primary btn-sm">
+	</form>
+		</div>
 </body>
 </html>
 

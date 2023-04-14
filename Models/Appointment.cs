@@ -7,8 +7,8 @@
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public DateTime Date { get; set;}
-		public TimeOnly StartTime { get; set; }
-		public TimeOnly EndTime { get; set; }
+		public TimeSpan StartTime { get; set; }
+		public TimeSpan EndTime { get; set; }
 
 		public string userId { get; set; }
 
