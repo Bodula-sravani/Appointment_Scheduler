@@ -64,6 +64,10 @@
 		h2 {
 			margin-top: 0;
 		}
+		p
+		{
+			text-align:center;
+		}
 	</style>
 </head>
 <body>
@@ -76,31 +80,69 @@
 	</form>
 	</div>
 	<div>
+		<br />
 	<form action="List">
 		<input name="userId" value="@Model.userId" hidden />
 		@*<input name="Name" value="@Model.Name" hidden />
 		<input name="phoneNumber" value="@Model.phoneNumber" hidden/>*@
-		<input type="submit" value="View your Appointments" class="btn btn-primary btn-sm">
+		<input type="submit" value="View all of your Appointments" class="btn btn-primary btn-sm">
 	</form>
-		</div>
-</body>
+	</div>
+	<br/>
+	@if (ViewBag.appointmentList.Count==0)
+	{
+		<p>YOU HAVE NO APPOINTMENTS TODAY</p>
+	}
+	else
+	{
+		<p>TODAY'S APPOINTMENTS </p>
+	<table class="table">
+    <thead>
+        <tr>
+            <th>
+               ID
+            </th>
+            <th>
+               TITLE
+            </th>
+            <th>
+                DESCRITPTION
+            </th>
+            <th>
+                Start Time
+            </th>
+			<th>
+				End Time
+			</th>
+        </tr>
+    </thead>
+    <tbody>
+     @foreach (var item in ViewBag.appointmentList) {
+        <tr>
+            <td>
+                @item.Id)
+            </td>
+            <td>
+                @item.Title)
+            </td>
+            <td>
+                @item.Description)
+            </td>
+            <td>
+                @item.startTime)
+            </td>
+			<td>
+				@item.endTime
+			</td>
+		</tr>
+	 }
+
+	</tbody>
+	</table>
+	}
+	</body>
 </html>
 
-@*<div>
-    <h1>Welcome @Model.Name</h1>
-</div>
-
-
-@*<form action="Create?userId=@Model.userId">
-    @*<input type="hidden" name="userId" value="@Model.userId" />*@
-   @* <input type="submit" value="Create appointment" class="btn btn-primary btn-sm">*@
-    @*<a asp-action="Create">create appointments</a>*@
-@*</form>*@
-
-
-@*<p>
-    <a asp-action="view">view your appointments</a>
-</p>*@
 
 
 

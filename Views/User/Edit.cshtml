@@ -48,6 +48,7 @@
                 <span asp-validation-for="userId" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <input name="userId" value="@Model.userId" hidden />
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -55,7 +56,7 @@
 </div>
 
 <div>
-    <a asp-action="List" >Back to List</a>
+    <a asp-action="List" asp-route-userId="@Model.userId">Back to List</a>
 </div>
 
 @section Scripts {

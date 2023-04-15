@@ -104,13 +104,54 @@ namespace Appointment_Scheduler.Controllers
             }
             return user;
         }
+
+		public List<Appointment> getdateAppointments(string userid)
+		{
+			Console.WriteLine("entered get date appointmensts method");
+			List<Appointment> appointmentsList = new List<Appointment>();
+			try
+			{
+				connection.Open();
+				SqlCommand command = new SqlCommand("getdateAppointments", connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@userid", userid);
+				command.Parameters.AddWithValue("@date", DateTime.Now);
+				SqlDataReader reader = command.ExecuteReader();
+				Console.WriteLine("reader excecuted");
+				while (reader.Read())
+				{
+					Appointment a = new Appointment();
+
+					a.Id = (int)reader["Id"];
+					a.Title = (string)reader["title"];
+					a.Description = (string)reader["description"];
+					a.Date = (DateTime)reader["Date_of_appointment"];
+					a.StartTime = (TimeSpan)reader["startTime"];
+					a.EndTime = (TimeSpan)reader["EndTime"];
+					a.userId = (string)reader["userId"];
+
+					appointmentsList.Add(a);
+
+				}
+				reader.Close();
+				connection.Close();
+
+			}
+			catch (SqlException ex)
+			{
+				Console.WriteLine("error: " + ex.Message);
+			}
+			
+			return appointmentsList;
+		}
 		public ActionResult userPage(string userId)
 		{
             Console.WriteLine("user id in user page method: " + userId);
             Users currentUser = getUser(userId);
-			
+			ViewBag.appointmentList = getdateAppointments(userId);
 			//ViewData["name"] = user1.Name;
-            Console.WriteLine("user Name: " + currentUser.Name);
+			Console.WriteLine("user Name: " + currentUser.Name);
+
             return View(currentUser);
 		}
 
@@ -198,12 +239,16 @@ namespace Appointment_Scheduler.Controllers
 			}
 			return appointmentsList;
 		}
-		public ActionResult List(Users user)
+		public ActionResult List(string userId)
 		{
+			if(userId==null)
+			{
+				userId = (string)Request.Query["userId"];
+			}
 			try
 			{
-				Console.WriteLine("in list method userid" + user.userId);
-				return View(GetAppointments(user.userId));
+				Console.WriteLine("in list method userid after query" + userId);
+				return View(GetAppointments(userId));
 			}
 			catch(Exception ex)
 			{
@@ -257,15 +302,42 @@ namespace Appointment_Scheduler.Controllers
 			Console.WriteLine("id of app in edit method :" + Id);
 			return View(GetAppointment(Id));
 		}
+		public void updateAppointment(Appointment appointment)
+		{
+            try
+            {
+				Console.WriteLine("entered update method");
+                connection.Open();
+                SqlCommand command = new SqlCommand("updateAppointment", connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@id", appointment.Id);
+                command.Parameters.AddWithValue("@date", appointment.Date);
+                command.Parameters.AddWithValue("@start", appointment.StartTime);
+                command.Parameters.AddWithValue("@end", appointment.EndTime);
+                command.Parameters.AddWithValue("@user", appointment.userId);
+                command.Parameters.AddWithValue("@title", appointment.Title);
+                command.Parameters.AddWithValue("@des", appointment.Description);
 
+                command.ExecuteNonQuery();
+                connection.Close();
+
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("error: " + ex.Message);
+            }
+            Console.WriteLine("exit update method");
+        }
 		// POST: UserController/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(int id, IFormCollection collection)
+		public ActionResult Edit(int id, Appointment a)
 		{
 			try
 			{
-				return RedirectToAction(nameof(Index));
+				updateAppointment(a);
+				Console.WriteLine("edit post userid: " + a.userId);
+				return RedirectToAction("List", "User",a.userId);  //not working userid is not being passed
 			}
 			catch
 			{
@@ -276,18 +348,41 @@ namespace Appointment_Scheduler.Controllers
 		// GET: UserController/Delete/5
 		public ActionResult Delete(int id)
 		{
-			return View();
+			Console.WriteLine("id in delete" + id);
+			return View(GetAppointment(id));
 		}
 
-		// POST: UserController/Delete/5
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, IFormCollection collection)
+		public void deleteAppointment(int id)
 		{
 			try
 			{
-				return RedirectToAction(nameof(Index));
+				Console.WriteLine("entered delete");
+				connection.Open();
+				SqlCommand command = new SqlCommand("deleteAppointment", connection);
+				command.CommandType = System.Data.CommandType.StoredProcedure;
+				command.Parameters.AddWithValue("@id", id);
+				command.ExecuteNonQuery();
+				connection.Close();
 			}
+			catch (SqlException ex)
+			{
+				Console.WriteLine("error: " + ex.Message);
+
+			}
+			Console.WriteLine("exit delete");
+		}
+		// POST: UserController/Delete/5
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult Delete(int id, Appointment a)
+		{
+			try
+			{
+				Console.WriteLine("enters delete post method");
+				Console.WriteLine("id in delete post: " + id);
+				deleteAppointment(id);
+				return RedirectToAction("userPage","User",a.userId); //not working userid is not being passed
+            }
 			catch
 			{
 				return View();
