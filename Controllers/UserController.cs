@@ -18,56 +18,6 @@ namespace Appointment_Scheduler.Controllers
 			this.connection = new SqlConnection(configuration.GetConnectionString("DB"));
 
 		}
-
-		// GET: UserController/Register new user
-		public ActionResult Register()
-		{
-			return View();
-		}
-		public void insertUser(Users user)
-		{
-			Console.WriteLine("inside insert user");
-			try
-			{
-				connection.Open();
-				SqlCommand command = new SqlCommand("insertUser", connection);
-				command.CommandType = System.Data.CommandType.StoredProcedure;
-				command.Parameters.AddWithValue("@userid", user.userId);
-				command.Parameters.AddWithValue("@username", user.Name);
-				command.Parameters.AddWithValue("@useremail", user.Email);
-				command.Parameters.AddWithValue("@userpassword", user.Password);
-				command.Parameters.AddWithValue("@userphonenumber", user.phoneNumber);
-
-				command.ExecuteNonQuery();
-				connection.Close();
-			}
-			catch(SqlException e)
-			{
-				Console.WriteLine("error: " + e.Message);
-				throw;
-			}
-			Console.WriteLine(user.phoneNumber);
-			Console.WriteLine("exiting insert user");
-		}
-		// POST: UserController/Register new user
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public ActionResult Register(Users user)
-		{
-			try
-			{
-				//Console.WriteLine("phone nmber: "+user.phoneNumber);
-				insertUser(user);
-				//Console.WriteLine("compeleted insert");
-				return RedirectToAction("Index", "Home");
-			}
-			catch(SqlException e)
-			{
-				TempData["ErrorMessage"] = "userid exists";
-				return View();
-			}
-		}
-
 		public Users getUser(string userId)
 		{
             Console.WriteLine("entered getUser method");
@@ -246,6 +196,7 @@ namespace Appointment_Scheduler.Controllers
 			try
 			{
 				Console.WriteLine("in list method userid after query" + userId);
+				ViewBag.userId = userId;	
 				return View(GetAppointments(userId));
 			}
 			catch(Exception ex)

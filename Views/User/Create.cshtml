@@ -4,9 +4,10 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-
-<h4>Appointment</h4>
+<div>
+    <a asp-action="userPage" asp-route-userId="@ViewBag.userId" class="btn btn-primary btn-sm">Back</a>
+</div>
+<h1>Add an Appointment</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -42,6 +43,7 @@
                 <input asp-for="userId" class="form-control" />
                 <span asp-validation-for="userId" class="text-danger"></span>
             </div>
+            <br/>
             <div class="form-group">
                 <input name="userId" value="@ViewBag.userId" hidden />
                 <input type="submit" value="Add" class="btn btn-primary" />
@@ -49,10 +51,8 @@
         </form>
     </div>
 </div>
+<br/>
 
-<div>
-    <a asp-action="userPage" asp-route-userId="@ViewBag.userId">Back</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

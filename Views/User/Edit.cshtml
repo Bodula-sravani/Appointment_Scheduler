@@ -4,9 +4,9 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Edit an Appointment</h1>
 
-<h4>Appointment</h4>
+
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -56,7 +56,7 @@
 </div>
 
 <div>
-    <a asp-action="List" asp-route-userId="@Model.userId">Back to List</a>
+    <a asp-action="List" asp-route-userId="@Model.userId" class="btn btn-primary btn-sm">Back to List</a>
 </div>
 
 @section Scripts {
