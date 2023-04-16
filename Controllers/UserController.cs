@@ -18,15 +18,8 @@ namespace Appointment_Scheduler.Controllers
 			this.connection = new SqlConnection(configuration.GetConnectionString("DB"));
 
 		}
-		// GET: UserController
-		public ActionResult Index()
-		{
-			return View();
-		}
 
-		
-
-		// GET: UserController/Create
+		// GET: UserController/Register new user
 		public ActionResult Register()
 		{
 			return View();
@@ -51,25 +44,26 @@ namespace Appointment_Scheduler.Controllers
 			catch(SqlException e)
 			{
 				Console.WriteLine("error: " + e.Message);
+				throw;
 			}
 			Console.WriteLine(user.phoneNumber);
 			Console.WriteLine("exiting insert user");
 		}
-		// POST: UserController/Create
+		// POST: UserController/Register new user
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public ActionResult Register(Users user)
 		{
 			try
 			{
-				Console.WriteLine("phone nmber: "+user.phoneNumber);
+				//Console.WriteLine("phone nmber: "+user.phoneNumber);
 				insertUser(user);
-				Console.WriteLine("compeleted insert");
-				//return RedirectToAction("Home/Index");
+				//Console.WriteLine("compeleted insert");
 				return RedirectToAction("Index", "Home");
 			}
-			catch
+			catch(SqlException e)
 			{
+				TempData["ErrorMessage"] = "userid exists";
 				return View();
 			}
 		}
@@ -105,9 +99,11 @@ namespace Appointment_Scheduler.Controllers
             return user;
         }
 
+		
 		public List<Appointment> getdateAppointments(string userid)
 		{
-			Console.WriteLine("entered get date appointmensts method");
+            // All appointments of that user
+            Console.WriteLine("entered get date appointmensts method");
 			List<Appointment> appointmentsList = new List<Appointment>();
 			try
 			{
@@ -149,7 +145,6 @@ namespace Appointment_Scheduler.Controllers
             Console.WriteLine("user id in user page method: " + userId);
             Users currentUser = getUser(userId);
 			ViewBag.appointmentList = getdateAppointments(userId);
-			//ViewData["name"] = user1.Name;
 			Console.WriteLine("user Name: " + currentUser.Name);
 
             return View(currentUser);
@@ -158,7 +153,7 @@ namespace Appointment_Scheduler.Controllers
 		public ActionResult Create(string userId)
 		{
 			Console.WriteLine("in create method id: " + userId);
-			ViewBag.userId = userId;
+			ViewBag.userId = userId;  //may be this can be used check once by removing userid in html page
 			return View();
 		}
 
@@ -166,24 +161,27 @@ namespace Appointment_Scheduler.Controllers
 		{
 			try
 			{
+				Console.WriteLine("entered insert appointment method");
 				connection.Open();
 				SqlCommand command = new SqlCommand("addAppointment", connection);
-				command.CommandType = CommandType.StoredProcedure;
+				command.CommandType = System.Data.CommandType.StoredProcedure;
 				command.Parameters.AddWithValue("@date", a.Date);
                 command.Parameters.AddWithValue("@start", a.StartTime);
                 command.Parameters.AddWithValue("@end", a.EndTime);
                 command.Parameters.AddWithValue("@user", a.userId);
                 command.Parameters.AddWithValue("@title", a.Title);
                 command.Parameters.AddWithValue("@des", a.Description);
-
+				Console.WriteLine("completed parameters");
 				command.ExecuteNonQuery();
 				connection.Close();
-
+				Console.WriteLine("executed the query");
+                Console.WriteLine("exit insert method");
             }
 			catch(SqlException ex) 
 			{
 				Console.WriteLine("error: " + ex.Message);
 			}
+			
 		}
 		// POST: UserController/Edit/5
 		[HttpPost]
@@ -195,7 +193,7 @@ namespace Appointment_Scheduler.Controllers
 			{
                 insertAppointment(a);
 				Console.WriteLine("using user obj in create post method: user id: " + user.userId);
-				return RedirectToAction("userPage", "User",user);
+				return RedirectToAction("userPage", "User",user); 
 			}
 			catch
 			{
@@ -300,6 +298,7 @@ namespace Appointment_Scheduler.Controllers
 		{
 			Console.WriteLine("Entered edit method");
 			Console.WriteLine("id of app in edit method :" + Id);
+			ViewBag.userId = GetAppointment(Id).userId;
 			return View(GetAppointment(Id));
 		}
 		public void updateAppointment(Appointment appointment)
@@ -331,13 +330,13 @@ namespace Appointment_Scheduler.Controllers
 		// POST: UserController/Edit/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Edit(int id, Appointment a)
+		public ActionResult Edit(int id, Users user,Appointment a)
 		{
 			try
 			{
 				updateAppointment(a);
-				Console.WriteLine("edit post userid: " + a.userId);
-				return RedirectToAction("List", "User",a.userId);  //not working userid is not being passed
+				Console.WriteLine("edit post userid from user: " + user.userId);
+				return RedirectToAction("List", "User",user);  //not working userid is not being passed
 			}
 			catch
 			{
@@ -349,7 +348,8 @@ namespace Appointment_Scheduler.Controllers
 		public ActionResult Delete(int id)
 		{
 			Console.WriteLine("id in delete" + id);
-			return View(GetAppointment(id));
+            ViewBag.userId = GetAppointment(id).userId;
+            return View(GetAppointment(id));
 		}
 
 		public void deleteAppointment(int id)
@@ -374,14 +374,14 @@ namespace Appointment_Scheduler.Controllers
 		// POST: UserController/Delete/5
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public ActionResult Delete(int id, Appointment a)
+		public ActionResult Delete(int id,Users user, Appointment a)
 		{
 			try
 			{
 				Console.WriteLine("enters delete post method");
 				Console.WriteLine("id in delete post: " + id);
 				deleteAppointment(id);
-				return RedirectToAction("userPage","User",a.userId); //not working userid is not being passed
+				return RedirectToAction("userPage","User",user); //not working userid is not being passed
             }
 			catch
 			{

@@ -23,7 +23,7 @@ namespace Appointment_Scheduler.Controllers
 
         public bool validateUser(string userId,string password)
         {
-			//Console.WriteLine("entered validateUser method");
+			Console.WriteLine("entered validateUser method");
 			try
 			{
 				connection.Open();
@@ -31,14 +31,15 @@ namespace Appointment_Scheduler.Controllers
 				command.CommandType = System.Data.CommandType.StoredProcedure;
 				command.Parameters.AddWithValue("@userid", userId);
 				SqlDataReader reader = command.ExecuteReader();
-				//Console.WriteLine("reader excecuted");
+				Console.WriteLine("reader excecuted");
 				string getPassword="";
 				while (reader.Read())
 				{
+					Console.WriteLine("inside whike");
 					getPassword = (string)reader["userPassword"];
 				}
 				//Console.WriteLine("reader value: " + (string)reader["userPassword"]);
-				//Console.WriteLine("passsowrds:  " + getPassword + " " + password);
+				Console.WriteLine("passsowrds:  " + getPassword + " " + password);
 				if(password.Equals(getPassword))
 				{
 					Console.WriteLine("paswoord are equal");
@@ -57,6 +58,7 @@ namespace Appointment_Scheduler.Controllers
 		}
         public IActionResult Index()
         {
+			Console.WriteLine("entered index method");
             return View();
         }
 
@@ -67,20 +69,21 @@ namespace Appointment_Scheduler.Controllers
         {
 			try
 			{
-				//Console.WriteLine("in post index: ");
+				Console.WriteLine("in post index: ");
 				Console.WriteLine("userid: from string " + userid);
-				//Console.WriteLine("password: " + password);
-				//Console.WriteLine("user.id: " + user.userId);
+				Console.WriteLine("password: " + password);
+				Console.WriteLine("user.id: " + user.userId);
 				if (validateUser(userid, password))
 				{
-					Console.WriteLine("validaed user");
-					Console.WriteLine("userid in index page "+user.userId);
-                    Console.WriteLine("userid: from string " + userid);
-                    return RedirectToAction("userPage","User",user);
+					//Console.WriteLine("validaed user");
+					//Console.WriteLine("userid in index page "+user.userId);
+					//               Console.WriteLine("userid: from string " + userid);
+                    return RedirectToAction("userPage","User", new { userId = userid });
 				}
 				else
 				{
 					Console.WriteLine("paswword mismatch");
+					TempData["ErrorMessage"] = "Invalid userid or password";
 					return View(); 
 				}
 

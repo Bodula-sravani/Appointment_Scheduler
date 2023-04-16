@@ -9,6 +9,8 @@
 <p>
     <a asp-action="Create" asp-route-userId="@Model.ElementAt(0).userId">Create New</a>
 </p>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -57,3 +59,6 @@
 }
     </tbody>
 </table>
+<p>
+    <a asp-action="userPage" asp-route-userId="@Model.ElementAt(0).userId">Back</a>
+</p>

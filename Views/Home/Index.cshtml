@@ -63,8 +63,12 @@
 	</style>
 </head>
 <body>
-	<form method="post" action="User/userPage">
+	<form asp-action="Index">
 		<h2>Login</h2>
+		@if (TempData["ErrorMessage"] != null)
+		{
+			<p style="color:red">@TempData["ErrorMessage"]</p>
+		}
 		<input type="text" placeholder="User ID" name="userid" required>
 		<input type="password" placeholder="Password" name="password" required>
 		<input type="submit" value="Login" class="btn btn-primary btn-sm">

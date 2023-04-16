@@ -11,6 +11,7 @@
 	<h1 class="display-4">Welcome @Model.Name</h1>
 </div>
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -31,6 +32,21 @@
 			border-radius: 10px;
 		}
 
+		.logout {
+			float: right;
+			margin-top: -40px;
+			margin-right: -20px;
+			background-color: #f44336;
+			color: white;
+			border-radius: 5px;
+			padding: 10px 20px;
+			border: none;
+			cursor: pointer;
+		}
+
+			.logout:hover {
+				background-color: #d32f2f;
+			}
 		input[type=text], input[type=password] {
 			padding: 10px;
 			margin: 10px 0;
@@ -71,6 +87,60 @@
 	</style>
 </head>
 <body>
+	<button class="logout" onclick="location.href='/'">Logout</button>
+	@if (ViewBag.appointmentList.Count == 0)
+	{
+		<p>YOU HAVE NO APPOINTMENTS TODAY</p>
+	}
+	else
+	{
+		<p>TODAY'S APPOINTMENTS </p>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>
+						ID
+					</th>
+					<th>
+						TITLE
+					</th>
+					<th>
+						DESCRITPTION
+					</th>
+					<th>
+						Start Time
+					</th>
+					<th>
+						End Time
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var item in ViewBag.appointmentList)
+				{
+					<tr>
+						<td>
+							@item.Id
+						</td>
+						<td>
+							@item.Title
+						</td>
+						<td>
+							@item.Description
+						</td>
+						<td>
+							@item.StartTime
+						</td>
+						<td>
+							@item.EndTime
+						</td>
+					</tr>
+				}
+
+			</tbody>
+		</table>
+	}
+	<br/>
 	<div>
 	<form action="Create">
 		<input name="userId" value="@Model.userId" hidden/>
@@ -89,57 +159,6 @@
 	</form>
 	</div>
 	<br/>
-	@if (ViewBag.appointmentList.Count==0)
-	{
-		<p>YOU HAVE NO APPOINTMENTS TODAY</p>
-	}
-	else
-	{
-		<p>TODAY'S APPOINTMENTS </p>
-	<table class="table">
-    <thead>
-        <tr>
-            <th>
-               ID
-            </th>
-            <th>
-               TITLE
-            </th>
-            <th>
-                DESCRITPTION
-            </th>
-            <th>
-                Start Time
-            </th>
-			<th>
-				End Time
-			</th>
-        </tr>
-    </thead>
-    <tbody>
-     @foreach (var item in ViewBag.appointmentList) {
-        <tr>
-            <td>
-                @item.Id)
-            </td>
-            <td>
-                @item.Title)
-            </td>
-            <td>
-                @item.Description)
-            </td>
-            <td>
-                @item.startTime)
-            </td>
-			<td>
-				@item.endTime
-			</td>
-		</tr>
-	 }
-
-	</tbody>
-	</table>
-	}
 	</body>
 </html>
 
